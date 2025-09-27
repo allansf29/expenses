@@ -1,3 +1,4 @@
+import Calendar from '@/components/Calendar'
 import {
   Card,
   CardHeader,
@@ -69,6 +70,7 @@ function Home() {
           </div>
         </div>
       </section>
+      <Calendar />
     </div>
   )
 }

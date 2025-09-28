@@ -27,6 +27,13 @@ interface Expense {
   color: string // Cor dinâmica (ex: bg-red-600)
 }
 
+interface MonthlySummary {
+    totalIncome: number;
+    totalExpense: number;
+    balance: number;
+    monthName: string;
+}
+
 // Cores puras para seleção customizada
 const colorOptions: { value: string; label: string; className: string }[] = [
   { value: "bg-red-600", label: "Vermelho", className: "bg-red-600" },
@@ -45,35 +52,156 @@ const createCorrectedDate = (dateString: string): Date => {
   return correctedDate;
 }
 
-// Dados iniciais (Outubro/2025)
+// --- DADOS INICIAIS (Ficam em 2025, mas o app inicia no mês atual) ---
 const initialExpenses: Expense[] = [
-  { id: 1, date: createCorrectedDate("2025-10-01"), amount: 60.0, description: "Gasolina", type: 'expense', color: "bg-red-700" },
-  { id: 2, date: createCorrectedDate("2025-10-01"), amount: 100.0, description: "Freelance", type: 'income', color: "bg-green-600" },
-  { id: 3, date: createCorrectedDate("2025-10-01"), amount: 15.0, description: "Almoço", type: 'expense', color: "bg-yellow-600" },
-  { id: 4, date: createCorrectedDate("2025-10-01"), amount: 5.0, description: "Café", type: 'expense', color: "bg-blue-600" },
-  { id: 5, date: createCorrectedDate("2025-09-30"), amount: 200.0, description: "Aluguel", type: 'expense', color: "bg-purple-600" },
-]
+  // Outubro (Mês Principal para dados de teste)
+  { id: 1, date: createCorrectedDate("2025-10-01"), amount: 600.0, description: "Aluguel", type: 'expense', color: "bg-red-700" },
+  { id: 2, date: createCorrectedDate("2025-10-05"), amount: 5500.0, description: "Salário Mensal", type: 'income', color: "bg-green-600" },
+  { id: 3, date: createCorrectedDate("2025-10-05"), amount: 150.0, description: "Supermercado", type: 'expense', color: "bg-yellow-600" },
+  { id: 4, date: createCorrectedDate("2025-10-10"), amount: 55.50, description: "Cinema e Pipoca", type: 'expense', color: "bg-blue-600" },
+  { id: 5, date: createCorrectedDate("2025-10-15"), amount: 300.0, description: "Venda Freelancer", type: 'income', color: "bg-purple-600" },
+  { id: 6, date: createCorrectedDate("2025-10-15"), amount: 25.0, description: "Padaria", type: 'expense', color: "bg-red-600" },
+  { id: 7, date: createCorrectedDate("2025-10-22"), amount: 120.0, description: "Plano de Saúde", type: 'expense', color: "bg-pink-600" },
+  { id: 8, date: createCorrectedDate("2025-10-22"), amount: 450.0, description: "Consultoria", type: 'income', color: "bg-green-700" },
+  { id: 9, date: createCorrectedDate("2025-10-28"), amount: 35.0, description: "Conta de Luz", type: 'expense', color: "bg-blue-800" },
+  { id: 10, date: createCorrectedDate("2025-09-28"), amount: 200.0, description: "Reembolso", type: 'income', color: "bg-yellow-700" },
+  { id: 11, date: createCorrectedDate("2025-09-01"), amount: 600.0, description: "Aluguel", type: 'expense', color: "bg-red-700" },
+  { id: 12, date: createCorrectedDate("2025-09-05"), amount: 5500.0, description: "Salário Mensal", type: 'income', color: "bg-green-600" },
+  { id: 13, date: createCorrectedDate("2025-10-05"), amount: 150.0, description: "Supermercado", type: 'expense', color: "bg-yellow-600" },
+  { id: 14, date: createCorrectedDate("2025-10-10"), amount: 55.50, description: "Cinema e Pipoca", type: 'expense', color: "bg-blue-600" },
+  { id: 15, date: createCorrectedDate("2025-10-15"), amount: 300.0, description: "Venda Freelancer", type: 'income', color: "bg-purple-600" },
+  { id: 16, date: createCorrectedDate("2025-10-15"), amount: 25.0, description: "Padaria", type: 'expense', color: "bg-red-600" },
+  { id: 17, date: createCorrectedDate("2025-10-22"), amount: 120.0, description: "Plano de Saúde", type: 'expense', color: "bg-pink-600" },
+  { id: 18, date: createCorrectedDate("2025-10-22"), amount: 450.0, description: "Consultoria", type: 'income', color: "bg-green-700" },
+  { id: 19, date: createCorrectedDate("2025-10-28"), amount: 35.0, description: "Conta de Luz", type: 'expense', color: "bg-blue-800" },
+  { id: 20, date: createCorrectedDate("2025-10-28"), amount: 200.0, description: "Reembolso", type: 'income', color: "bg-yellow-700" },
 
-// --- 2. Componente Principal ---
+  // Setembro (Mês Anterior)
+  { id: 11, date: createCorrectedDate("2025-09-28"), amount: 75.0, description: "Jantar", type: 'expense', color: "bg-red-500" },
+  
+  // Novembro (Próximo Mês)
+  { id: 12, date: createCorrectedDate("2025-11-01"), amount: 120.0, description: "Internet", type: 'expense', color: "bg-blue-500" },
+];
+
+// Componente Button Simples (Evitando dependências externas)
+const SimpleButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, className, ...props }) => (
+  <button
+    {...props}
+    className={`px-4 py-2 rounded-md font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 ${className}`}
+  >
+    {children}
+  </button>
+);
+
+// --- 2. Componente Resumo Total (Agora com filtro mensal) ---
+
+const TotalSummary: React.FC<{ summary: MonthlySummary }> = ({ summary }) => {
+  const { totalIncome, totalExpense, balance, monthName } = summary;
+
+  const formatCurrency = (amount: number) => 
+    `R$${amount.toFixed(2).replace('.', ',')}`;
+    
+  // Capitaliza a primeira letra do nome do mês para exibição
+  const displayMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+  return (
+    <div className="bg-gray-800 p-4 rounded-xl shadow-xl mb-6 text-white">
+      <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2 text-gray-300">
+        Resumo de {displayMonthName}
+      </h2>
+      
+      <div className="flex flex-wrap gap-4 justify-between">
+      
+        {/* Total Receitas */}
+        <div className="flex flex-col items-start p-3 bg-gray-900 rounded-lg flex-1 min-w-[150px] transition-transform hover:scale-[1.02] duration-300">
+          <div className="text-sm text-gray-400 font-medium flex items-center">
+            <ArrowUp className="w-4 h-4 mr-1 text-green-400"/> Receitas
+          </div>
+          <span className="text-2xl font-bold text-green-400 mt-1">
+            {formatCurrency(totalIncome)}
+          </span>
+        </div>
+
+        {/* Total Despesas */}
+        <div className="flex flex-col items-start p-3 bg-gray-900 rounded-lg flex-1 min-w-[150px] transition-transform hover:scale-[1.02] duration-300">
+          <div className="text-sm text-gray-400 font-medium flex items-center">
+            <ArrowDown className="w-4 h-4 mr-1 text-red-400"/> Despesas
+          </div>
+          <span className="text-2xl font-bold text-red-400 mt-1">
+            {formatCurrency(totalExpense)}
+          </span>
+        </div>
+
+        {/* Saldo Total (Destaque) */}
+        <div className={`flex flex-col items-start p-3 rounded-lg flex-1 min-w-[150px] transition-transform hover:scale-[1.02] duration-300 ${
+          balance >= 0 ? 'bg-blue-700' : 'bg-red-800'
+        } border ${balance >= 0 ? 'border-blue-600' : 'border-red-700'}`}>
+          <div className="text-sm font-medium flex items-center text-white">
+            <DollarSign className="w-4 h-4 mr-1"/> SALDO FINAL
+          </div>
+          <span className="text-2xl font-bold text-white mt-1">
+            {formatCurrency(balance)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// --- 3. Componente Principal ---
 
 export default function ExpenseCalendar(): React.ReactElement {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 9, 1)) // Outubro/2025
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  // ATUALIZAÇÃO 1: Inicia no mês/dia atual
+  const [currentMonth, setCurrentMonth] = useState(new Date()) 
+  const [selectedDate, setSelectedDate] = useState(new Date()) 
 
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newAmount, setNewAmount] = useState<string>("")
   const [newDescription, setNewDescription] = useState("")
-  const [newDate, setNewDate] = useState(format(selectedDate, "yyyy-MM-dd"))
+  // Usa o formato 'yyyy-MM-dd' para o input type="date"
+  const [newDate, setNewDate] = useState(format(selectedDate, "yyyy-MM-dd")) 
   const [newType, setNewType] = useState<TransactionType>('expense') 
   const [newColor, setNewColor] = useState(colorOptions[0].value) 
+  
+  // ATUALIZAÇÃO 2: Calcula o resumo financeiro APENAS para o mês atual
+  const monthlySummary = useMemo(() => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+
+    // Filtra as despesas que estão DENTRO do mês atual, incluindo os limites do mês
+    const filteredExpenses = expenses.filter(e => 
+        isSameMonth(e.date, currentMonth)
+    );
+
+    const totalIncome = filteredExpenses
+        .filter(e => e.type === 'income')
+        .reduce((sum, exp) => sum + exp.amount, 0);
+        
+    const totalExpense = filteredExpenses
+        .filter(e => e.type === 'expense')
+        .reduce((sum, exp) => sum + exp.amount, 0);
+        
+    const balance = totalIncome - totalExpense;
+
+    return { 
+        totalIncome, 
+        totalExpense, 
+        balance, 
+        monthName: format(currentMonth, "MMMM", { locale: ptBR }) 
+    };
+  }, [expenses, currentMonth]);
 
 
   const handleAddExpense = () => {
-    const amountFloat = parseFloat(newAmount.replace(",", "."))
+    // Substitui vírgula por ponto para garantir que parseFloat funcione corretamente.
+    const amountFloat = parseFloat(newAmount.replace(",", ".")) 
+    
+    // Simples feedback de erro no console
     if (newDescription.trim() === "" || isNaN(amountFloat) || amountFloat <= 0) {
-      alert("Por favor, insira um valor e uma descrição válidos.")
+      console.error("Erro: Por favor, insira um valor e uma descrição válidos.")
       return
     }
 
@@ -104,17 +232,8 @@ export default function ExpenseCalendar(): React.ReactElement {
     setIsModalOpen(true)
   }
 
-  // Componente Button Simples (Substitui Button do Shadcn)
-  const SimpleButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, className, ...props }) => (
-    <button
-      {...props}
-      className={`px-4 py-2 rounded-md font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 ${className}`}
-    >
-      {children}
-    </button>
-  );
 
-  // --- Renderização do Cabeçalho ---
+  // --- Renderização do Cabeçalho do Calendário ---
 
   const renderHeader = () => (
     <div className="flex items-center justify-between mb-2 pb-4 border-b border-gray-800 text-white">
@@ -139,7 +258,8 @@ export default function ExpenseCalendar(): React.ReactElement {
       </div>
       {/* Botão Novo Lançamento */}
       <SimpleButton 
-        onClick={() => openModalForDate(selectedDate)}
+        // Abre o modal para a data selecionada atualmente (ou hoje se for a primeira vez)
+        onClick={() => openModalForDate(selectedDate)} 
         className="bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500"
       >
         <DollarSign className="w-4 h-4 mr-2 inline-block" /> Novo Lançamento
@@ -151,6 +271,7 @@ export default function ExpenseCalendar(): React.ReactElement {
 
   const renderDays = () => {
     const days: React.ReactElement[] = []
+    // Começa no Domingo (0)
     const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"] 
 
     for (let i = 0; i < 7; i++) {
@@ -166,12 +287,12 @@ export default function ExpenseCalendar(): React.ReactElement {
     return <div className="flex w-full border-b border-gray-800">{days}</div>
   }
 
-  // --- Renderização das Células ---
+  // --- Renderização das Células do Calendário ---
 
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth)
     const monthEnd = endOfMonth(monthStart)
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 })
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 }) 
     const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 })
 
     const rows: React.ReactElement[] = []
@@ -184,12 +305,9 @@ export default function ExpenseCalendar(): React.ReactElement {
         const cloneDay = new Date(day)
         const formattedDate = format(cloneDay, "d")
         
+        // Filtra os lançamentos para o dia atual
         const dayExpenses = expenses.filter((e) => isSameDay(e.date, cloneDay))
         
-        const totalIncome = dayExpenses.filter(e => e.type === 'income').reduce((sum, exp) => sum + exp.amount, 0)
-        const totalExpense = dayExpenses.filter(e => e.type === 'expense').reduce((sum, exp) => sum + exp.amount, 0)
-        const dailyBalance = totalIncome - totalExpense
-
         const isCurrentMonth = isSameMonth(cloneDay, monthStart)
         const isToday = isSameDay(cloneDay, new Date())
         const isSelected = isSameDay(cloneDay, selectedDate)
@@ -213,35 +331,28 @@ export default function ExpenseCalendar(): React.ReactElement {
                 {formattedDate}
             </div>
             
-            {/* Visualização do SALDO DIÁRIO */}
-            {dailyBalance !== 0 && (
-              <span
-                className={`text-[10px] text-white px-2 py-[2px] rounded-full font-medium shadow-sm truncate max-w-full 
-                  ${dailyBalance > 0 ? "bg-green-700/80" : "bg-red-700/80"} mb-1
-                `}
-                title={`Receita: R$${totalIncome.toFixed(2)} | Despesa: R$${totalExpense.toFixed(2)}`}
-              >
-                SALDO: R${dailyBalance.toFixed(2).replace('.', ',')}
-              </span>
-            )}
-            
-            {/* Exibe as notas do dia como BLOCOS COLORIDOS */}
+            {/* Exibe as notas do dia como BLOCOS COLORIDOS - Com valor e sinal */}
             <div className="flex flex-col gap-1 w-full mt-1">
-                {dayExpenses.slice(0, 2).map((event, idx) => (
+                {/* Mostra até 3 itens */}
+                {dayExpenses.slice(0, 3).map((event, idx) => (
                     <div
                         key={idx}
-                        className={`text-[11px] text-white px-1 py-[2px] rounded-sm truncate w-full shadow-md ${event.color} transition-opacity hover:opacity-100 opacity-90`}
+                        className={`text-[11px] text-white px-1 py-[2px] rounded-sm truncate w-full shadow-md flex justify-between items-center ${event.color} transition-opacity hover:opacity-100 opacity-90`}
                         title={`${event.description} | ${event.type === 'income' ? 'Receita' : 'Despesa'}: R$${event.amount.toFixed(2).replace('.', ',')}`}
                     >
-                        {event.description}
+                        <span className="truncate">{event.description}</span>
+                        {/* Exibe o valor com sinal */}
+                        <span className="font-semibold ml-2 flex-shrink-0">
+                            {event.type === 'income' ? '+' : '-'}R$ {event.amount.toFixed(2).replace('.', ',')}
+                        </span>
                     </div>
                 ))}
             </div>
             
             {/* Indicador de mais itens */}
-            {dayExpenses.length > 2 && (
-                 <span className="text-xs text-gray-500 mt-1 cursor-pointer hover:text-blue-400">
-                    +{dayExpenses.length - 2} mais
+            {dayExpenses.length > 3 && (
+                <span className="text-xs text-gray-500 mt-1 cursor-pointer hover:text-blue-400">
+                    +{dayExpenses.length - 3} mais
                 </span>
             )}
             
@@ -262,19 +373,19 @@ export default function ExpenseCalendar(): React.ReactElement {
     return <div className="mt-0 border-l border-t border-gray-800">{rows}</div>
   }
 
-  // --- 3. Modal de Adição (PURO REACT/TAILWIND) ---
+  // --- 4. Modal de Adição (PURO REACT/TAILWIND) ---
 
   const renderModal = () => {
     if (!isModalOpen) return null;
 
     return (
       // Overlay do Modal (fixed inset-0)
-      <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
         {/* Conteúdo do Modal */}
-        <div className="bg-gray-900 border border-gray-700 text-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+        <div className="bg-gray-900 border border-gray-700 text-white rounded-xl shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
           
           {/* Header do Modal */}
-          <div className="flex justify-between items-center border-b border-gray-800 pb-3 mb-4">
+          <div className="flex justify-between items-center border-b border-gray-800 pb-3 mb-4 sticky top-0 bg-gray-900 z-10">
             <h3 className="text-xl text-white font-bold">
               Novo Lançamento em {format(selectedDate, "dd/MM/yyyy")}
             </h3>
@@ -330,7 +441,8 @@ export default function ExpenseCalendar(): React.ReactElement {
                 id="amount"
                 type="text"
                 value={newAmount}
-                onChange={(e) => setNewAmount(e.target.value.replace(/[^0-9,.]/g, ''))}
+                // Permite apenas números, vírgulas ou pontos
+                onChange={(e) => setNewAmount(e.target.value.replace(/[^0-9,.]/g, ''))} 
                 className="w-full mt-1 p-2 rounded-md bg-gray-800 border border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 placeholder="0,00"
               />
@@ -406,14 +518,26 @@ export default function ExpenseCalendar(): React.ReactElement {
   // --- Renderização Principal ---
 
   return (
-    // Div Principal com estilo de Card
-    <div className="p-6 w-full shadow-2xl rounded-xl bg-gray-900 border border-gray-800 max-w-7xl mx-auto">
-      {renderHeader()}
-      {renderDays()}
-      {renderCells()}
-      
-      {/* Renderiza o Modal */}
-      {renderModal()}
+    <div className="bg-gray-950 min-h-screen p-4 md:p-8 font-['Inter']">
+      {/* Div Principal com estilo de Card */}
+      <div className="p-6 w-full shadow-2xl rounded-xl bg-gray-900 border border-gray-800 max-w-7xl mx-auto">
+        
+        <h1 className="text-3xl font-extrabold text-white mb-6 flex items-center">
+            <CalendarIcon className="w-7 h-7 mr-3 text-blue-500"/>
+            Minhas Finanças
+        </h1>
+        
+        {/* Adiciona o Resumo Total, agora filtrado pelo mês */}
+        <TotalSummary summary={monthlySummary} />
+        
+        {/* Renderiza o Calendário */}
+        {renderHeader()}
+        {renderDays()}
+        {renderCells()}
+        
+        {/* Renderiza o Modal */}
+        {renderModal()}
+      </div>
     </div>
   )
 }

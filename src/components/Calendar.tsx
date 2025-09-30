@@ -14,6 +14,7 @@ import {
 import { ptBR } from "date-fns/locale"
 import { Calendar as CalendarIcon, DollarSign, ArrowDown, ArrowUp, X, TrendingUp, Edit, Download } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Sidebar from "./Sidebar";
 
 
 // --- 1. TIPAGEM E DADOS INICIAIS ---
@@ -114,6 +115,7 @@ const TotalSummary: React.FC<{ summary: MonthlySummary }> = ({ summary }) => {
 
   return (
     <div className="bg-gray-800 p-4 rounded-xl shadow-xl mb-6 text-white">
+      <Sidebar />
       <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2 text-gray-300">
         Resumo de {displayMonthName}
       </h2>

@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css'
 import Home from './pages/Home.tsx'
-import Navbar from './components/ui/Navbar.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import Calendar from './components/Calendar.tsx'
 

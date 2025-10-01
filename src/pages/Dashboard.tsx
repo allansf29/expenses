@@ -138,7 +138,7 @@ export default function Dashboard(): React.ReactElement {
   return (
     <div className="min-h-screen bg-gray-950 font-['Inter']">
       <Sidebar />
-      <main className="overflow-y-auto p-4 sm:p-8 max-w-7xl mx-auto">
+      <main className="lg:ml-64 overflow-y-auto p-4 sm:p-8">
         {/* Header */}
         <header className="pb-4 mb-6 border-b border-gray-800 flex justify-between items-center">
           <div>

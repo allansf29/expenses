@@ -933,7 +933,7 @@ export default function ExpenseCalendar(): React.ReactElement {
 
   return (
     <div className="bg-gray-950 min-h-screen p-4 md:p-8 font-['Inter']">
-      <div className="p-6 w-full shadow-2xl rounded-xl bg-gray-900 border border-gray-800 max-w-7xl mx-auto">
+      <div className="lg:ml-64 overflow-y-auto p-4 sm:p-8 shadow-2xl rounded-xl bg-gray-900 border border-gray-800">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-800 pb-4">
             <h1 className="text-3xl font-extrabold text-white flex items-center mb-3 md:mb-0">

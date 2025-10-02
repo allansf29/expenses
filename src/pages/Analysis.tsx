@@ -17,6 +17,7 @@ import {
   Cell,
   Legend,
 } from "recharts"
+import Sidebar from "@/components/Sidebar"
 
 // Dados mockados de receitas e despesas mensais
 const dataMensal = [
@@ -39,7 +40,8 @@ const COLORS = ["#FF4C4C", "#FF9900", "#4C9AFF", "#00C49F"]
 
 export default function AnalisesPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 lg:ml-64 overflow-y-auto sm:p-8">
+      <Sidebar />
       <h1 className="text-2xl font-bold">Análises Financeiras</h1>
       <p className="text-muted-foreground">
         Veja comparações de receitas, despesas e categorias de gastos.

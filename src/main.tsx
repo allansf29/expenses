@@ -5,6 +5,7 @@ import './index.css'
 import Home from './pages/Home.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import Calendar from './components/Calendar.tsx'
+import Analise from './pages/Analysis.tsx';
 
 
 
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<Dashboard />} />
         <Route path="/home" element={<Home />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/analysis" element={<Analise />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

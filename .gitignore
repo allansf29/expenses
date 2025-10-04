@@ -1,0 +1,17 @@
+# ARQUIVOS GERAIS
+*.env
+.env.local
+.DS_Store
+
+# IGNORE NODE MODULES DO FRONT-END
+Front-End/node_modules/
+Front-End/dist/
+Front-End/build/
+
+# IGNORE NODE MODULES DO BACK-END (SE HOUVER)
+Back-End/node_modules/
+Back-End/dist/
+
+# CONFIGURAÇÕES DO EDITOR
+.vscode/
+.idea/

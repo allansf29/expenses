@@ -1,4 +1,4 @@
-import Calendar from '@/components/ExpenseCalendar'
+import Calendar from '@/components/calendar/ExpenseCalendar'
 import {
   Card,
   CardHeader,

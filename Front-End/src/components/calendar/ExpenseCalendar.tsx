@@ -1,13 +1,13 @@
 import React from "react";
 import { Calendar as CalendarIcon, Download } from "lucide-react";
 // Componentes externos
-import SimpleButton from "./ui/SimpleButton.tsx";
-import TotalSummary from "./TotalSummary.tsx";
-import MonthlyAreaChart from "./charts/MonthlyAreaChart.tsx";
-import CalendarView from "./calendar/CalendarView.tsx";
+import SimpleButton from "../ui/SimpleButton.tsx";
+import TotalSummary from "../TotalSummary.tsx";
+import MonthlyAreaChart from "../charts/MonthlyAreaChart.tsx";
+import CalendarView from "./CalendarView.tsx";
 // Hooks
-import { useFinanceData } from "../hooks/useFinanceData.tsx";
-import { useExpenseForm } from "../hooks/useExpenseForm.tsx"; // Ajuste o caminho se necessário
+import { useFinanceData } from "../../hooks/useFinanceData.tsx";
+import { useExpenseForm } from "../../hooks/useExpenseForm.tsx"; // Ajuste o caminho se necessário
 
 
 export default function ExpenseCalendar(): React.ReactElement {

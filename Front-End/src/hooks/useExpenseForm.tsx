@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { format } from "date-fns";
-import { DollarSign, X, Edit, ArrowDown, ArrowUp, Calendar as CalendarIcon, Download } from "lucide-react";
+import { DollarSign, X, Edit, ArrowDown, ArrowUp, Calendar as CalendarIcon } from "lucide-react";
 import axios from "axios";
 import type { Expense, ExpenseFormData } from "../lib/types.ts";
 import { API_URL, colorOptions } from "../lib/constants.ts";
@@ -204,7 +204,7 @@ export function useExpenseForm({ expenses, selectedDate, fetchExpensesFromServer
               <label className="text-gray-300 mb-3 block font-medium">Cor de Destaque</label>
               <div className="flex gap-3 flex-wrap">
                 {colorOptions.map((c) => (
-                  <button key={c.value} type="button" onClick={() => updateFormData("color", c.value)} className={`w-10 h-10 rounded-full border-2 transition-all shadow-md ${c.value} ${modalFormData.color === c.value ? "border-white ring-2 ring-offset-2 ring-offset-gray-900" : "border-transparent opacity-60 hover:opacity-100"}`} title={c.label} />
+                  <button key={c.value} type="button" onClick={() => updateFormData("color", c.value)} className={`w-10 h-10 rounded-full border-2 transition-all shadow-md cursor-pointer ${c.value} ${modalFormData.color === c.value ? "border-white ring-2 ring-offset-2 ring-offset-gray-900" : "border-transparent opacity-60 hover:opacity-100"}`} title={c.label} />
                 ))}
               </div>
             </div>

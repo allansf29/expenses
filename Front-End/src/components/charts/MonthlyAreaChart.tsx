@@ -1,4 +1,3 @@
-// src/components/charts/MonthlyAreaChart.tsx
 import React from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ArrowDown, TrendingUp } from "lucide-react";
@@ -9,7 +8,6 @@ interface MonthlyAreaChartProps {
   data: ChartData[];
 }
 
-// Seu componente MonthlyAreaChart (Mantendo toda a lógica de tendência aqui)
 const MonthlyAreaChart: React.FC<MonthlyAreaChartProps> = ({ data }) => {
   if (data.length < 2) {
     return (

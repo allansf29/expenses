@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css'
 import Home from './pages/Home.tsx'
 import Dashboard from './pages/Dashboard.tsx'
-import Calendar from './components/Calendar.tsx'
+import Calendar from './components/ExpenseCalendar.tsx'
 import Analise from './pages/Analysis.tsx';
 
 

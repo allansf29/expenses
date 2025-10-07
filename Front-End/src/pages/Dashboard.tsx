@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 
+// 💡 IMPORTAR O HOOK DE DADOS
+import { useFinanceData } from "../hooks/useFinanceData.tsx"; // Ajuste o caminho conforme sua estrutura real
+
 // --- COMPONENTES AUXILIARES ---
 
 // Card de Resumo (Stats Card)
@@ -55,8 +58,19 @@ const FeatureCard: React.FC<{
   </a>
 );
 
-// --- 1. CONTEÚDO DA HOME ---
+// --- 1. CONTEÚDO DA HOME (AGORA COM DADOS REAIS) ---
 const DashboardHomeContent: React.FC = () => {
+  // 💡 CHAMA O HOOK PARA OBTER OS DADOS AGREGADOS
+  const { monthlySummary } = useFinanceData();
+
+  // Função para formatar o valor como moeda brasileira (R$ X.XXX,XX)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(amount);
+  };
+
   const navModules = [
     {
       href: "/calendar",
@@ -90,23 +104,24 @@ const DashboardHomeContent: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-160px)] space-y-10">
-      {/* 1. Cards de Resumo */}
+      {/* 1. Cards de Resumo (AGORA USANDO monthlySummary) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SummaryCard
-          title="Saldo Previsto"
-          value="R$ 6.350,00"
+          title={`Saldo do Mês (${monthlySummary.monthName})`}
+          value={formatCurrency(monthlySummary.balance)}
           icon={Wallet}
-          color="text-blue-400"
+          // Cor baseada no saldo: verde se positivo, vermelho se negativo
+          color={monthlySummary.balance >= 0 ? "text-green-400" : "text-red-400"}
         />
         <SummaryCard
           title="Receitas (Mês)"
-          value="R$ 7.500,00"
+          value={formatCurrency(monthlySummary.totalIncome)}
           icon={TrendingUp}
           color="text-green-400"
         />
         <SummaryCard
           title="Despesas (Mês)"
-          value="R$ 1.150,00"
+          value={formatCurrency(monthlySummary.totalExpense)}
           icon={TrendingDown}
           color="text-red-400"
         />
@@ -146,7 +161,7 @@ export default function Dashboard(): React.ReactElement {
               Painel Principal
             </h1>
             <p className="text-sm text-gray-400 mt-1">
-              Clique nos cards para acessar suas páginas externas.
+              Seja bem-vindo(a) ao resumo de suas finanças!
             </p>
           </div>
           <DollarSign className="w-8 h-8 text-white bg-blue-600 rounded-full p-1" />

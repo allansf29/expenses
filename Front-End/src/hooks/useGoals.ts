@@ -37,20 +37,18 @@ export const useGoals = () => {
         fetchGoals();
     }, [fetchGoals]);
 
-    // Criação de Meta
+    // Criação de Meta - ATUALIZADO (O Front-end chamará fetchGoals após o sucesso)
     const createGoal = async (data: GoalFormData): Promise<Goal> => {
         try {
             const response = await api.post(GOALS_ENDPOINT, data);
-            const newGoal = mapGoalData(response.data);
-            setGoals(prevGoals => [...prevGoals, newGoal]);
-            return newGoal;
+            const newGoal = mapGoalData(response.data);         
+            return newGoal; // Apenas retorna a nova meta
         } catch (err) {
             console.error('Error creating goal:', err);
             throw new Error('Falha ao criar a meta.');
         }
     };
     
-    // Edição de Meta
     const editGoal = async (goalId: string, data: GoalFormData): Promise<Goal> => {
         try {
             const response = await api.put(`${GOALS_ENDPOINT}/${goalId}`, data);
@@ -65,11 +63,9 @@ export const useGoals = () => {
         }
     };
 
-    // Deleção de Meta (e todas as suas contribuições)
     const deleteGoal = async (goalId: string): Promise<void> => {
         try {
-            await api.delete(`${GOALS_ENDPOINT}/${goalId}`);
-            setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
+            await api.delete(`${GOALS_ENDPOINT}/${goalId}`);          
         } catch (err) {
             console.error('Error deleting goal:', err);
             throw new Error('Falha ao deletar a meta.');
@@ -93,7 +89,7 @@ export const useGoals = () => {
         }
     };
 
-    // NOVO: Exclusão de Contribuição
+    // Exclusão de Contribuição
     const deleteContribution = async (goalId: string, contributionId: string): Promise<Goal> => {
         try {
             // Usa DELETE no endpoint específico que remove a contribuição e atualiza a meta
@@ -116,7 +112,7 @@ export const useGoals = () => {
         goals,
         isLoading,
         error,
-        fetchGoals,
+        fetchGoals, // ESSENCIAL: Deve ser chamado após createGoal e deleteGoal
         createGoal,
         editGoal,
         deleteGoal,

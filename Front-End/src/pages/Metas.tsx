@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react'; // IMPORTA useEffect
 import { format } from 'date-fns';
 import { Target, TrendingUp, Calendar, X, Loader2, Edit, List, ArrowDownCircle, Clock } from 'lucide-react';
 
+// Ajuste os caminhos de importação conforme sua estrutura
 import Sidebar from './../components/Sidebar'; 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; 
 import SimpleButton from './../components/ui/SimpleButton'; 
@@ -18,9 +19,9 @@ const formatCurrency = (value: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
 const formatInputCurrency = (value: string) => {
-    // Permite apenas números, vírgulas e pontos, depois converte para ponto decimal
     return value.replace(/[^0-9,.]/g, "").replace(",", ".");
 }
+
 
 // =================================================================
 // Componente Auxiliar: Formulário de Adicionar Meta (GoalForm)
@@ -28,9 +29,10 @@ const formatInputCurrency = (value: string) => {
 
 interface GoalFormProps {
     onCreateGoal: (data: GoalFormData) => Promise<Goal>; 
+    onSuccess: () => void;
 }
 
-const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal }) => {
+const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal, onSuccess }) => {
     const [formData, setFormData] = useState<GoalFormData>({
         name: '',
         targetAmount: '',
@@ -50,7 +52,6 @@ const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Usa a função auxiliar para limpar e validar o valor
         const amountFloat = parseFloat(formatInputCurrency(String(formData.targetAmount)));
 
         if (!formData.name || isNaN(amountFloat) || amountFloat <= 0) {
@@ -72,8 +73,7 @@ const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal }) => {
                 targetAmount: '', 
                 targetDate: new Date(),
             });
-            // Opcional: Remova o alert para UX mais suave:
-            // alert(`Meta "${formData.name}" criada com sucesso!`);
+            onSuccess();
         } catch (error) {
             alert("Erro ao salvar a meta. Verifique o console do Back-end.");
         } finally {
@@ -81,12 +81,10 @@ const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal }) => {
         }
     };
     
-    // Converte a data para o formato yyyy-MM-dd que o input[type=date] espera
     const formattedDate = formData.targetDate instanceof Date && !isNaN(formData.targetDate.getTime()) 
         ? format(formData.targetDate, 'yyyy-MM-dd') 
         : format(new Date(), 'yyyy-MM-dd');
 
-    // Formata o valor de input para aceitar vírgula (opcional, se quiser mostrar formatação)
     const formattedAmount = String(formData.targetAmount).replace('.', ',');
 
 
@@ -128,20 +126,19 @@ const GoalForm: React.FC<GoalFormProps> = ({ onCreateGoal }) => {
 interface HistoryModalProps {
     goal: Goal;
     onClose: () => void;
-    // NOVO: Adiciona a função de exclusão de contribuição
     onDeleteContribution: (goalId: string, contributionId: string) => Promise<Goal>; 
 }
 
 const HistoryModal: React.FC<HistoryModalProps> = ({ goal, onClose, onDeleteContribution }) => {
     
-    // Handler para o clique na lixeira
     const handleDelete = async (contributionId: string, amount: number) => {
         if (!window.confirm(`Tem certeza que deseja excluir esta contribuição de ${formatCurrency(amount)}? O valor será subtraído da meta.`)) {
             return;
         }
         try {
+            // A exclusão é feita e o estado global goals é atualizado
             await onDeleteContribution(goal.id, contributionId);
-            // O estado é atualizado pelo hook, a lista se re-renderiza.
+            // O useEffect no GoalsList abaixo irá pegar esta meta atualizada
         } catch (e) {
             alert('Falha ao deletar a contribuição.');
         }
@@ -178,7 +175,6 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ goal, onClose, onDeleteCont
                                             </p>
                                         </div>
                                     </div>
-                                    {/* Botão de Lixeira */}
                                     <SimpleButton 
                                         onClick={() => handleDelete(contribution.id, contribution.amount)} 
                                         className="bg-red-800/50 text-red-400 hover:bg-red-700/50 p-2 h-auto w-auto focus:ring-red-600"
@@ -209,7 +205,6 @@ interface EditModalProps {
 const EditModal: React.FC<EditModalProps> = ({ goal, onClose, onEditGoal }) => {
     const [formData, setFormData] = useState<GoalFormData>({
         name: goal.name,
-        // Garante que o input mostre a vírgula para UX do usuário
         targetAmount: String(goal.targetAmount).replace('.', ','), 
         targetDate: goal.targetDate instanceof Date ? goal.targetDate : new Date(goal.targetDate),
     });
@@ -229,7 +224,6 @@ const EditModal: React.FC<EditModalProps> = ({ goal, onClose, onEditGoal }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Converte a string de input para float para enviar ao backend
         const amountFloat = parseFloat(formatInputCurrency(String(formData.targetAmount)));
 
         if (!formData.name || isNaN(amountFloat) || amountFloat <= 0) {
@@ -300,16 +294,28 @@ const EditModal: React.FC<EditModalProps> = ({ goal, onClose, onEditGoal }) => {
 
 
 // =================================================================
-// Componente Auxiliar: GoalsList
+// Componente Auxiliar: GoalsList - CORRIGIDO (Adiciona useEffect para o Modal)
 // =================================================================
 
 const GoalsList: React.FC = () => {
-    // IMPORTAÇÃO CORRIGIDA: Inclua deleteContribution
-    const { goals, registerContribution, deleteGoal, editGoal, deleteContribution } = useGoals();
+    const { goals, registerContribution, deleteGoal, editGoal, deleteContribution, fetchGoals } = useGoals();
     
     const [contributionInputs, setContributionInputs] = useState<Record<string, string>>({});
     const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
     const [viewingHistoryGoal, setViewingHistoryGoal] = useState<Goal | null>(null);
+
+    // CORREÇÃO AQUI: Garante que o viewingHistoryGoal (o objeto do modal)
+    // seja atualizado sempre que o estado 'goals' mudar.
+    useEffect(() => {
+        if (viewingHistoryGoal) {
+            // Tenta encontrar a versão mais recente da meta no estado 'goals'
+            const updatedGoal = goals.find(g => g.id === viewingHistoryGoal.id);
+            if (updatedGoal) {
+                // Se encontrar, atualiza o estado local do modal
+                setViewingHistoryGoal(updatedGoal);
+            }
+        }
+    }, [goals, viewingHistoryGoal]); // Dependências: goals e se o modal está aberto
 
     const handleContribute = useCallback(async (goalId: string) => {
         const inputAmount = contributionInputs[goalId] || '0';
@@ -332,10 +338,11 @@ const GoalsList: React.FC = () => {
         if (!window.confirm(`Tem certeza que deseja excluir a meta "${goalName}" e todo o seu histórico de contribuições?`)) return;
         try {
             await deleteGoal(goalId);
+            fetchGoals(); 
         } catch (e) {
             alert('Falha ao deletar a meta.');
         }
-    }, [deleteGoal]);
+    }, [deleteGoal, fetchGoals]);
 
     return (
         <div className="grid grid-cols-1 gap-6">
@@ -421,7 +428,6 @@ const GoalsList: React.FC = () => {
                 <HistoryModal
                     goal={viewingHistoryGoal}
                     onClose={() => setViewingHistoryGoal(null)}
-                    // PASSA A FUNÇÃO DE EXCLUSÃO PARA A MODAL
                     onDeleteContribution={deleteContribution} 
                 />
             )}
@@ -435,7 +441,7 @@ const GoalsList: React.FC = () => {
 // =================================================================
 
 export default function MetasPage() {
-    const { createGoal, isLoading, error } = useGoals();
+    const { createGoal, fetchGoals, isLoading, error } = useGoals();
     
     return (
         <div className="bg-gray-950 min-h-screen font-['Inter']">
@@ -447,7 +453,7 @@ export default function MetasPage() {
                 </p>
 
                 <div className="space-y-6">
-                    <GoalForm onCreateGoal={createGoal} />
+                    <GoalForm onCreateGoal={createGoal} onSuccess={fetchGoals} />
 
                     {isLoading && (
                         <div className='flex items-center justify-center p-10 text-white'>

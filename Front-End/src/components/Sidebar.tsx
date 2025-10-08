@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import React, { useEffect, useState } from "react";
 import {
   LayoutDashboard,
@@ -17,7 +16,7 @@ const navItems: { name: string; href: string; icon: IconType }[] = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Calendário", href: "/calendar", icon: Calendar },
   { name: "Análises", href: "/analysis", icon: BarChart3 },
-  { name: "Metas", href: "/goals", icon: Target },
+  { name: "Metas", href: "/metas", icon: Target },
   { name: "Configurações", href: "/configs", icon: Settings },
 ];
 

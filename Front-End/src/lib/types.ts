@@ -32,3 +32,30 @@ export interface ExpenseFormData {
   type: TransactionType;
   color: string;
 }
+
+export interface GoalContribution {
+    id: string;
+    amount: number;
+    date: Date | string; // Data da contribuição
+    goalId: string;
+    createdAt: Date | string;
+}
+
+export interface Goal {
+    id: string;
+    name: string;
+    targetAmount: number;
+    currentAmount: number;
+    targetDate: Date | string; 
+    isCompleted: boolean;
+    createdAt: Date | string;
+    // NOVO: Adiciona o histórico de contribuições
+    contributions: GoalContribution[]; 
+}
+
+export interface GoalFormData {
+    name: string;
+    targetAmount: number | string;
+    targetDate: Date;
+}
+

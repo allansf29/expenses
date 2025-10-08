@@ -16,3 +16,25 @@ model Expense {
   date        DateTime
   createdAt   DateTime @default(now())
 }
+
+model Goal {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  targetDate    DateTime
+  isCompleted   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  contributions GoalContribution[] 
+}
+
+model GoalContribution {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount    Float
+  date      DateTime @default(now())
+  goalId    String   @db.ObjectId
+  
+  // Este campo já existia. O Prisma associa automaticamente.
+  goal      Goal     @relation(fields: [goalId], references: [id]) 
+  createdAt DateTime @default(now())
+}

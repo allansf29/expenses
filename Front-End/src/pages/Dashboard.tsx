@@ -11,28 +11,31 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 
-// 💡 IMPORTAR O HOOK DE DADOS
-import { useFinanceData } from "../hooks/useFinanceData.tsx"; // Ajuste o caminho conforme sua estrutura real
+import { useFinanceData } from "../hooks/useFinanceData.tsx"; 
 
 // --- COMPONENTES AUXILIARES ---
 
-// Card de Resumo (Stats Card)
+// Usando bg-card e text-card-foreground do shadcn para respeitar o tema
 const SummaryCard: React.FC<{
   title: string;
   value: string;
   icon: React.ElementType;
   color: string;
 }> = ({ title, value, icon: Icon, color }) => (
-  <div className="p-4 bg-gray-800 rounded-xl shadow-lg border border-gray-700 flex items-center justify-between transition-transform duration-200 hover:scale-[1.02]">
+  // Fundo com cor do card, borda e hover de destaque
+  <div className="p-5 bg-card/70 backdrop-blur-sm rounded-xl border border-border/50 shadow-md flex items-center justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:border-primary relative overflow-hidden group">
+    <div className={`absolute inset-0 opacity-5 ${color.replace('text-', 'bg-')}`}></div>
+    
     <div>
-      <p className="text-sm font-medium text-gray-400">{title}</p>
-      <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
+      <p className="text-sm font-light text-muted-foreground">{title}</p>
+      <p className={`text-3xl font-extrabold mt-1 ${color}`}>{value}</p>
     </div>
-    <Icon className={`w-8 h-8 ${color}`} />
+    <div className={`p-2 rounded-full ring-2 ring-offset-2 ring-background ${color.replace('text-', 'ring-')}`}>
+      <Icon className={`w-7 h-7 ${color}`} />
+    </div>
   </div>
 );
 
-// Card de Navegação (Feature Card)
 const FeatureCard: React.FC<{
   href: string;
   title: string;
@@ -43,27 +46,31 @@ const FeatureCard: React.FC<{
   <a
     href={href}
     target="_self"
-    className="w-full p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-xl transition-all duration-300 transform hover:scale-[1.02] group"
+    // Fundo do card, hover com gradiente mais escuro/claro
+    className="w-full p-6 bg-card rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] group relative overflow-hidden border border-border hover:border-primary/50"
   >
-    <div
-      className={`p-3 w-fit rounded-lg mb-4 ${color.replace(
-        "text-",
-        "bg-"
-      )}/20 group-hover:scale-110 transition-transform duration-300`}
-    >
-      <Icon className={`w-8 h-8 ${color}`} />
+    {/* Efeito de overlay no hover mais discreto */}
+    <div className="absolute inset-0 bg-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+    <div className="relative">
+      <div
+        className={`p-3 w-fit rounded-full mb-4 ${color.replace(
+          "text-",
+          "bg-"
+        )}/10 group-hover:scale-110 transition-transform duration-300`}
+      >
+        <Icon className={`w-8 h-8 ${color}`} />
+      </div>
+      <h3 className="text-xl font-extrabold text-card-foreground mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </div>
-    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-    <p className="text-sm text-gray-400">{description}</p>
   </a>
 );
 
-// --- 1. CONTEÚDO DA HOME (AGORA COM DADOS REAIS) ---
+// --- 1. CONTEÚDO DA HOME ---
 const DashboardHomeContent: React.FC = () => {
-  // 💡 CHAMA O HOOK PARA OBTER OS DADOS AGREGADOS
   const { monthlySummary } = useFinanceData();
 
-  // Função para formatar o valor como moeda brasileira (R$ X.XXX,XX)
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -77,61 +84,63 @@ const DashboardHomeContent: React.FC = () => {
       name: "Lançamentos & Calendário",
       description: "Clique para ir diretamente para a sua página /calendar.",
       icon: CalendarIcon,
-      color: "text-blue-400",
+      color: "text-indigo-500", // Cores ligeiramente ajustadas para melhor contraste
     },
     {
       href: "/analysis",
       name: "Análise de Gastos",
       description: "Veja gráficos e tendências rapidamente.",
       icon: BarChart3,
-      color: "text-yellow-400",
+      color: "text-amber-500",
     },
     {
       href: "/metas",
       name: "Metas e Objetivos",
       description: "Acompanhe seu progresso de poupança.",
       icon: Target,
-      color: "text-pink-400",
+      color: "text-fuchsia-500",
     },
     {
       href: "/configs",
       name: "Configurações",
       description: "Gerencie categorias e contas.",
       icon: Zap,
-      color: "text-orange-400",
+      color: "text-sky-500",
     },
   ];
 
   return (
-    <div className="min-h-[calc(100vh-160px)] space-y-10">
-      {/* 1. Cards de Resumo (AGORA USANDO monthlySummary) */}
+    <div className="space-y-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SummaryCard
           title={`Saldo do Mês (${monthlySummary.monthName})`}
           value={formatCurrency(monthlySummary.balance)}
           icon={Wallet}
-          // Cor baseada no saldo: verde se positivo, vermelho se negativo
-          color={monthlySummary.balance >= 0 ? "text-green-400" : "text-red-400"}
+          // Usando cores padrão do Tailwind que se destacam
+          color={
+            monthlySummary.balance >= 0
+              ? "text-green-500" 
+              : "text-red-500" 
+          }
         />
         <SummaryCard
           title="Receitas (Mês)"
           value={formatCurrency(monthlySummary.totalIncome)}
           icon={TrendingUp}
-          color="text-green-400"
+          color="text-green-500"
         />
         <SummaryCard
           title="Despesas (Mês)"
           value={formatCurrency(monthlySummary.totalExpense)}
           icon={TrendingDown}
-          color="text-red-400"
+          color="text-red-500"
         />
       </div>
 
-      <h3 className="text-2xl font-bold text-white border-b border-gray-700 pb-2">
+      <h3 className="text-2xl font-extrabold text-foreground pt-4 pb-2">
         Acesso Rápido
       </h3>
 
-      {/* 2. Cards de Navegação */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {navModules.map((module) => (
           <FeatureCard
@@ -151,24 +160,27 @@ const DashboardHomeContent: React.FC = () => {
 // --- 2. COMPONENTE PRINCIPAL ---
 export default function Dashboard(): React.ReactElement {
   return (
-    <div className="min-h-screen bg-gray-950 font-['Inter']">
+    // Usa apenas min-h-screen e font, permitindo que o <body> gerencie o bg-background
+    <div className="min-h-screen font-['Inter'] relative">
       <Sidebar />
-      <main className="lg:ml-64 overflow-y-auto p-4 sm:p-8">
-        {/* Header */}
-        <header className="pb-4 mb-6 border-b border-gray-800 flex justify-between items-center">
+      <main className="lg:ml-64 overflow-y-auto p-4 sm:p-8 relative z-10">
+        <header className="pb-4 mb-8 border-b border-border flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-extrabold text-white">
+            <h1 className="text-4xl font-black text-foreground leading-tight">
               Painel Principal
             </h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-base text-muted-foreground mt-1">
               Seja bem-vindo(a) ao resumo de suas finanças!
             </p>
           </div>
-          <DollarSign className="w-8 h-8 text-white bg-blue-600 rounded-full p-1" />
+          {/* Usando gradiente com primary e secondary do shadcn */}
+          <div className="bg-gradient-to-r from-primary to-secondary rounded-full p-2 shadow-lg shadow-primary/30">
+            <DollarSign className="w-8 h-8 text-primary-foreground" />
+          </div>
         </header>
 
-        {/* Conteúdo */}
-        <div className="bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-800 shadow-2xl min-h-[calc(100vh-160px)]">
+        {/* Container principal usa bg-background/80 e borda padrão */}
+        <div className="bg-background/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl border border-border shadow-2xl min-h-[calc(100vh-180px)]">
           <DashboardHomeContent />
         </div>
       </main>

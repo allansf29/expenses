@@ -7,6 +7,8 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
+  User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,10 +22,9 @@ const navItems: { name: string; href: string; icon: IconType }[] = [
   { name: "Configurações", href: "/configs", icon: Settings },
 ];
 
-const SIDEBAR_WIDTH_PX = 256; // corresponde a w-64
+const SIDEBAR_WIDTH_PX = 256; 
 
 export default function Sidebar(): React.ReactElement {
-  // aberto por padrão em desktop, fechado em mobile
   const [open, setOpen] = useState<boolean>(
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
@@ -33,24 +34,21 @@ export default function Sidebar(): React.ReactElement {
   const [active, setActive] = useState<string>("");
 
   useEffect(() => {
-    // set active com base na rota atual (simples)
     if (typeof window !== "undefined") {
       setActive(window.location.pathname + window.location.hash);
     }
   }, []);
 
   useEffect(() => {
-    // ajusta quando redimensionar: abre no desktop sempre, fecha no mobile
     const handleResize = () => {
       const desktop = window.innerWidth >= 1024;
       setIsDesktop(desktop);
-      setOpen(desktop); // força aberto em desktop, fechado em mobile
+      setOpen(desktop);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // helper simples
   const classNames = (...args: Array<string | false | null | undefined>) =>
     args.filter(Boolean).join(" ");
 
@@ -62,7 +60,8 @@ export default function Sidebar(): React.ReactElement {
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="w-11 h-11 rounded-lg bg-gradient-to-b from-white/6 to-white/2 border border-white/6 flex items-center justify-center shadow-sm text-white backdrop-blur-sm"
+          // Usando cores do tema: bg-card, border-border, text-foreground
+          className="w-11 h-11 rounded-lg bg-card border border-border flex items-center justify-center shadow-md text-foreground transition-colors"
         >
           <AnimatePresence initial={false}>
             {open ? (
@@ -110,18 +109,20 @@ export default function Sidebar(): React.ReactElement {
         initial={{ x: isDesktop ? 0 : -SIDEBAR_WIDTH_PX }}
         animate={{ x: open ? 0 : -SIDEBAR_WIDTH_PX }}
         transition={{ type: "spring", stiffness: 280, damping: 30 }}
-        className="fixed top-0 left-0 h-screen w-64 z-50"
+        className="fixed top-0 left-0 h-screen w-64 z-50 shadow-2xl"
         style={{ pointerEvents: open || isDesktop ? "auto" : "none" }}
       >
-        <div className="h-full bg-[#161B22] border-r border-gray-800 p-5 flex flex-col">
+        {/* Usando bg-card e border-r do shadcn */}
+        <div className="h-full bg-card border-r border-border p-5 flex flex-col">
           {/* Branding */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white font-bold shadow-sm">
+            {/* Logo usando primary/secondary para tema */}
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold shadow-lg">
               $$
             </div>
             <div>
-              <div className="text-white font-semibold">Meu Painel</div>
-              <div className="text-xs text-gray-400">Finance • v1.0</div>
+              <div className="text-xl text-foreground font-bold">Financeiro</div>
+              <div className="text-xs text-muted-foreground">App • v1.0</div>
             </div>
           </div>
 
@@ -130,61 +131,58 @@ export default function Sidebar(): React.ReactElement {
             <ul className="space-y-2 relative">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                // considera active se o pathname começar com href (tratando seções)
                 const isActive =
                   active === item.href ||
                   (item.href !== "/" && active.startsWith(item.href));
 
                 return (
                   <li key={item.href} className="relative">
-                    {/* indicador ativo animado (barra esquerda) */}
+                    {/* Indicador ativo animado (barra esquerda) */}
                     {isActive && (
                       <motion.span
                         layoutId="sidebar-active"
-                        className="absolute left-0 top-0 h-full w-1 rounded-r-md"
-                        style={{
-                          background:
-                            "linear-gradient(180deg,#60a5fa,#8b5cf6)", // azul -> violeta
-                        }}
+                        className="absolute left-0 top-0 h-full w-1 rounded-r-md bg-primary shadow-lg shadow-primary/50"
                       />
                     )}
 
                     <motion.a
                       href={item.href}
                       onClick={() => {
-                        // atualiza active localmente (navegação vai mudar a rota logo em seguida)
                         setActive(item.href);
-                        if (!isDesktop) setOpen(false); // fecha no mobile após clicar
+                        if (!isDesktop) setOpen(false);
                       }}
                       whileHover={{ x: 6 }}
                       whileTap={{ scale: 0.985 }}
                       className={classNames(
-                        "group relative flex items-center gap-3 w-full px-3 py-2 pl-[1.1rem] rounded-md transition-all",
+                        "group relative flex items-center gap-3 w-full px-3 py-2 pl-4 rounded-lg transition-all",
+                        // Item ativo: bg-primary/10, texto-primary
                         isActive
-                          ? "text-white bg-white/2"
-                          : "text-gray-300 hover:text-white hover:bg-white/3"
+                          ? "text-primary bg-primary/10 font-semibold"
+                          // Item inativo: text-muted-foreground, hover mais discreto
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                       )}
                       aria-current={isActive ? "page" : undefined}
                     >
                       <div
                         className={classNames(
-                          "w-8 h-8 rounded-md flex items-center justify-center",
-                          isActive ? "bg-white/6" : "bg-transparent"
+                          "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                          isActive ? "bg-primary/20" : "bg-transparent"
                         )}
                       >
+                        {/* Ícone usa primary ou current cor de texto */}
                         <Icon
                           className={classNames(
                             "w-5 h-5",
-                            isActive ? "text-blue-400" : "text-gray-300"
+                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                           )}
                         />
                       </div>
 
                       <span className="text-sm font-medium">{item.name}</span>
-                      {/* mini badge no final (exemplo) */}
+                      
                       {item.name === "Calendário" && (
-                        <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400">
-                          novo
+                        <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-500 font-medium">
+                          New
                         </span>
                       )}
                     </motion.a>
@@ -195,30 +193,31 @@ export default function Sidebar(): React.ReactElement {
           </nav>
 
           {/* Footer actions */}
-          <div className="mt-6 pt-4 border-t border-gray-800">
+          <div className="mt-6 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
-                // exemplo de ação: abrir página de perfil/settings
                 window.location.href = "/profile";
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-white/3 transition"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition"
             >
-              <div className="w-8 h-8 rounded-md flex items-center justify-center bg-transparent">
-                <Settings className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5" />
               </div>
-              <span className="text-sm">Perfil</span>
+              <span className="text-sm font-medium">Perfil</span>
             </button>
 
             <button
               type="button"
               onClick={() => {
-                // placeholder de logout
                 alert("Logout (aqui põe tua lógica)");
               }}
-              className="mt-3 w-full text-left px-3 py-2 rounded-md text-red-400 hover:bg-red-500/8 transition"
+              className="mt-3 w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-500/10 transition"
             >
-              Sair
+              <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                <LogOut className="w-5 h-5" />
+              </div>
+              <span className="text-sm font-medium">Sair</span>
             </button>
           </div>
         </div>

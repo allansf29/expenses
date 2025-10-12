@@ -60,7 +60,6 @@ export default function Sidebar(): React.ReactElement {
           aria-label={open ? "Fechar menu" : "Abrir menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          // Usando cores do tema: bg-card, border-border, text-foreground
           className="w-11 h-11 rounded-lg bg-card border border-border flex items-center justify-center shadow-md text-foreground transition-colors"
         >
           <AnimatePresence initial={false}>
@@ -112,11 +111,9 @@ export default function Sidebar(): React.ReactElement {
         className="fixed top-0 left-0 h-screen w-64 z-50 shadow-2xl"
         style={{ pointerEvents: open || isDesktop ? "auto" : "none" }}
       >
-        {/* Usando bg-card e border-r do shadcn */}
         <div className="h-full bg-card border-r border-border p-5 flex flex-col">
           {/* Branding */}
           <div className="flex items-center gap-3 mb-8">
-            {/* Logo usando primary/secondary para tema */}
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold shadow-lg">
               $$
             </div>

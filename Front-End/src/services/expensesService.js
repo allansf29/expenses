@@ -6,9 +6,15 @@ export const getExpenses = async () => {
   return res.data;
 };
 
-// Criar novo lançamento
+// Criar novo lançamento SIMPLES
 export const createExpense = async (data) => {
   const res = await api.post("/expenses", data);
+  return res.data;
+};
+
+// Criar Lançamento Recorrente
+export const createRecurrence = async (data) => {
+  const res = await api.post("/expenses/recurrence", data);
   return res.data;
 };
 

@@ -14,6 +14,9 @@ model Expense {
   type        String
   color       String
   date        DateTime
+  isRecurrence  Boolean   @default(false)
+  frequency     String?
+  installments  Int?
   createdAt   DateTime @default(now())
 }
 
@@ -34,7 +37,6 @@ model GoalContribution {
   date      DateTime @default(now())
   goalId    String   @db.ObjectId
   
-  // Este campo já existia. O Prisma associa automaticamente.
   goal      Goal     @relation(fields: [goalId], references: [id]) 
   createdAt DateTime @default(now())
 }

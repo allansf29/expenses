@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Target, TrendingUp, Calendar, X, Loader2, Edit, List, ArrowDownCircle, Clock, Trash2, User } from 'lucide-react';
+import { Target, TrendingUp, Calendar, X, Loader2, Edit, List, ArrowDownCircle, Clock, Trash2 } from 'lucide-react';
 
 import Sidebar from './../components/Sidebar'; 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; 
 import SimpleButton from './../components/ui/SimpleButton'; 
 
 import { useGoals } from '../hooks/useGoals';
-import type { Goal, GoalFormData, GoalContribution } from '../lib/types';
+import type { Goal, GoalFormData } from '../lib/types';
 
 
 // =================================================================

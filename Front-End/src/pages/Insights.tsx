@@ -45,14 +45,9 @@ export default function InsightsPage() {
     };
 
     return (
-        // Envolve tudo no layout do dashboard (min-h-screen e relative)
         <div className="min-h-screen font-['Inter'] relative">
             <Sidebar /> 
-            
-            {/* O MAIN com a margem esquerda para a Sidebar */}
             <main className="lg:ml-64 overflow-y-auto p-4 sm:p-8 relative z-10">
-                
-                {/* CABEÇALHO DO LAYOUT (Copiado do seu Dashboard) */}
                 <header className="pb-4 mb-8 border-b border-border flex justify-between items-center">
                     <div>
                         <h1 className="text-4xl font-black text-foreground leading-tight">
@@ -66,11 +61,8 @@ export default function InsightsPage() {
                         <DollarIcon className="w-8 h-8 text-primary-foreground" />
                     </div>
                 </header>
-
-                {/* CONTEÚDO DA PÁGINA (Com o container BG e border) */}
                 <div className="bg-background/80 backdrop-blur-sm p-4 sm:p-8 rounded-2xl border border-border shadow-2xl min-h-[calc(100vh-180px)]">
                     
-                    {/* Botões de Exportação (Alinhados com o design do Dashboard) */}
                     <div className="flex justify-end gap-3 mb-8">
                         <Button 
                             onClick={() => handleExportCSV("month")} 

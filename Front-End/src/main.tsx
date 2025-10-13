@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard.tsx'
 import Calendar from './components/calendar/ExpenseCalendar.tsx'
 import Analise from './pages/Analysis.tsx';
 import Metas from './pages/Metas.tsx';
+import InsightsPage from './pages/Insights.tsx';
 
 
 
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/analysis" element={<Analise />} />
         <Route path="/metas" element={<Metas />} />
+        <Route path="/insights" element={<InsightsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

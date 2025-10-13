@@ -7,11 +7,11 @@ import {
   TrendingDown,
   DollarSign,
   Calendar as CalendarIcon,
-  Zap,
+  Lightbulb,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 
-import { useFinanceData } from "../hooks/useFinanceData.tsx"; 
+import { useFinanceData } from "../hooks/useFinanceData.tsx";
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -25,7 +25,7 @@ const SummaryCard: React.FC<{
   // Fundo com cor do card, borda e hover de destaque
   <div className="p-5 bg-card/70 backdrop-blur-sm rounded-xl border border-border/50 shadow-md flex items-center justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:border-primary relative overflow-hidden group">
     <div className={`absolute inset-0 opacity-5 ${color.replace('text-', 'bg-')}`}></div>
-    
+
     <div>
       <p className="text-sm font-light text-muted-foreground">{title}</p>
       <p className={`text-3xl font-extrabold mt-1 ${color}`}>{value}</p>
@@ -101,10 +101,10 @@ const DashboardHomeContent: React.FC = () => {
       color: "text-fuchsia-500",
     },
     {
-      href: "/configs",
-      name: "Configurações",
-      description: "Gerencie categorias e contas.",
-      icon: Zap,
+      href: "/insights",
+      name: "Estratégia e Metas",
+      description: "Obtenha uma visão estratégica de suas finanças e veja o status das suas metas de poupança.", // Descrição no Acesso Rápido
+      icon: Lightbulb,
       color: "text-sky-500",
     },
   ];
@@ -119,8 +119,8 @@ const DashboardHomeContent: React.FC = () => {
           // Usando cores padrão do Tailwind que se destacam
           color={
             monthlySummary.balance >= 0
-              ? "text-green-500" 
-              : "text-red-500" 
+              ? "text-green-500"
+              : "text-red-500"
           }
         />
         <SummaryCard

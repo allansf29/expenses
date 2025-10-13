@@ -4,7 +4,7 @@ import {
   Calendar,
   BarChart3,
   Target,
-  Settings,
+  Lightbulb,
   Menu,
   X,
   LogOut,
@@ -19,7 +19,7 @@ const navItems: { name: string; href: string; icon: IconType }[] = [
   { name: "Calendário", href: "/calendar", icon: Calendar },
   { name: "Análises", href: "/analysis", icon: BarChart3 },
   { name: "Metas", href: "/metas", icon: Target },
-  { name: "Configurações", href: "/configs", icon: Settings },
+  { name: "Estratégia e Metas", href: "/insights", icon: Lightbulb },
 ];
 
 const SIDEBAR_WIDTH_PX = 256; 

@@ -2,7 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css'
-import Home from './pages/Home.tsx'
 import Dashboard from './pages/Dashboard.tsx'
 import Calendar from './components/calendar/ExpenseCalendar.tsx'
 import Analise from './pages/Analysis.tsx';
@@ -16,7 +15,6 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/analysis" element={<Analise />} />
         <Route path="/metas" element={<Metas />} />

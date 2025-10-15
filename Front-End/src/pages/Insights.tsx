@@ -66,13 +66,13 @@ export default function InsightsPage() {
                     <div className="flex justify-end gap-3 mb-8">
                         <Button 
                             onClick={() => handleExportCSV("month")} 
-                            className="flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            className="flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
                         >
                             <FileDown className="w-4 h-4" /> Exportar Mês
                         </Button>
                         <Button 
-                            onClick={() => handleExportCSV("all")} 
-                            className="flex items-center gap-2"
+                            onClick={() => handleExportCSV("all")}
+                            className="flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
                         >
                             <FileDown className="w-4 h-4" /> Exportar Tudo
                         </Button>

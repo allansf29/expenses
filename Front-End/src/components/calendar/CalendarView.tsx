@@ -30,26 +30,32 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     openModalForDate,
     openModalForEdit,
 }) => {
-    
+
     const renderHeader = () => (
         <div className="flex items-center justify-between mb-2 pb-4 border-b border-border text-foreground">
             <div className="flex items-center gap-2">
-                <SimpleButton 
-                    className="h-8 w-8 text-muted-foreground hover:bg-accent bg-transparent hover:text-foreground p-0 focus:ring-ring" 
+                <SimpleButton
+                    className="h-8 w-8 text-muted-foreground hover:bg-accent bg-transparent hover:text-foreground p-0 focus:ring-ring shrink-0"
                     onClick={prevMonth}
                 >
                     <ChevronLeft className="w-5 h-5" />
                 </SimpleButton>
-                <h2 className="text-xl font-medium w-48 text-left capitalize">{format(currentMonth, "MMMM yyyy", { locale: ptBR })}</h2>
-                <SimpleButton 
-                    className="h-8 w-8 text-muted-foreground hover:bg-accent bg-transparent hover:text-foreground p-0 focus:ring-ring" 
+                <h2 className="text-sm sm:text-xl font-medium text-left capitalize min-w-0 truncate">
+                    {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+                </h2>
+                <SimpleButton
+                    className="h-8 w-8 text-muted-foreground hover:bg-accent bg-transparent hover:text-foreground p-0 focus:ring-ring shrink-0"
                     onClick={nextMonth}
                 >
-                    <ChevronRight className="w-5 h-5" /> 
+                    <ChevronRight className="w-5 h-5" />
                 </SimpleButton>
             </div>
-            <SimpleButton onClick={() => openModalForDate(selectedDate)} className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring">
-                <DollarSign className="w-4 h-4 mr-2 inline-block" /> Novo Lançamento
+            <SimpleButton
+                onClick={() => openModalForDate(selectedDate)}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring shrink-0 flex items-center"
+            >
+                <DollarSign className="w-4 h-4 mr-0 sm:mr-2" />
+                <span className="hidden sm:inline">Novo Lançamento</span>
             </SimpleButton>
         </div>
     );
@@ -84,7 +90,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 const cloneDay = new Date(day);
                 const formattedDate = format(cloneDay, "d");
 
-                const dayExpenses = expenses.filter((e) => isSameDay(e.date, cloneDay)); 
+                const dayExpenses = expenses.filter((e) => isSameDay(e.date, cloneDay));
                 const isCurrentMonth = isSameMonth(cloneDay, monthStart);
                 const isToday = isSameDay(cloneDay, new Date());
                 const isSelected = isSameDay(cloneDay, selectedDate);

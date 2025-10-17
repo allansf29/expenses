@@ -8,9 +8,9 @@ import {
   Menu,
   X,
   LogOut,
-  User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
@@ -22,7 +22,7 @@ const navItems: { name: string; href: string; icon: IconType }[] = [
   { name: "Estratégia e Metas", href: "/insights", icon: Lightbulb },
 ];
 
-const SIDEBAR_WIDTH_PX = 256; 
+const SIDEBAR_WIDTH_PX = 256;
 
 export default function Sidebar(): React.ReactElement {
   const [open, setOpen] = useState<boolean>(
@@ -32,6 +32,7 @@ export default function Sidebar(): React.ReactElement {
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
   const [active, setActive] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -54,7 +55,6 @@ export default function Sidebar(): React.ReactElement {
 
   return (
     <>
-      {/* Botão hamburguer / fechar - mobile */}
       <div className="lg:hidden fixed top-4 left-4 z-[60]">
         <button
           aria-label={open ? "Fechar menu" : "Abrir menu"}
@@ -86,7 +86,6 @@ export default function Sidebar(): React.ReactElement {
         </button>
       </div>
 
-      {/* Overlay mobile */}
       <AnimatePresence>
         {!isDesktop && open && (
           <motion.div
@@ -101,7 +100,6 @@ export default function Sidebar(): React.ReactElement {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
       <motion.aside
         role="navigation"
         aria-label="Sidebar"
@@ -112,7 +110,6 @@ export default function Sidebar(): React.ReactElement {
         style={{ pointerEvents: open || isDesktop ? "auto" : "none" }}
       >
         <div className="h-full bg-card border-r border-border p-5 flex flex-col">
-          {/* Branding */}
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold shadow-lg">
               $$
@@ -123,7 +120,6 @@ export default function Sidebar(): React.ReactElement {
             </div>
           </div>
 
-          {/* Nav */}
           <nav className="flex-1">
             <ul className="space-y-2 relative">
               {navItems.map((item) => {
@@ -134,7 +130,6 @@ export default function Sidebar(): React.ReactElement {
 
                 return (
                   <li key={item.href} className="relative">
-                    {/* Indicador ativo animado (barra esquerda) */}
                     {isActive && (
                       <motion.span
                         layoutId="sidebar-active"
@@ -152,10 +147,8 @@ export default function Sidebar(): React.ReactElement {
                       whileTap={{ scale: 0.985 }}
                       className={classNames(
                         "group relative flex items-center gap-3 w-full px-3 py-2 pl-4 rounded-lg transition-all",
-                        // Item ativo: bg-primary/10, texto-primary
                         isActive
                           ? "text-primary bg-primary/10 font-semibold"
-                          // Item inativo: text-muted-foreground, hover mais discreto
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                       )}
                       aria-current={isActive ? "page" : undefined}
@@ -166,17 +159,18 @@ export default function Sidebar(): React.ReactElement {
                           isActive ? "bg-primary/20" : "bg-transparent"
                         )}
                       >
-                        {/* Ícone usa primary ou current cor de texto */}
                         <Icon
                           className={classNames(
                             "w-5 h-5",
-                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                            isActive
+                              ? "text-primary"
+                              : "text-muted-foreground group-hover:text-foreground"
                           )}
                         />
                       </div>
 
                       <span className="text-sm font-medium">{item.name}</span>
-                      
+
                       {item.name === "Calendário" && (
                         <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-500 font-medium">
                           New
@@ -189,27 +183,18 @@ export default function Sidebar(): React.ReactElement {
             </ul>
           </nav>
 
-          {/* Footer actions */}
           <div className="mt-6 pt-4 border-t border-border">
             <button
               type="button"
               onClick={() => {
-                window.location.href = "/profile";
+                const confirmar = window.confirm("Tem certeza que deseja sair?");
+                if (confirmar) {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
+                  navigate("/login");
+                }
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition"
-            >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5" />
-              </div>
-              <span className="text-sm font-medium">Perfil</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                alert("Logout (aqui põe tua lógica)");
-              }}
-              className="mt-3 w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-500/10 transition"
+              className="mt-3 w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-500 hover:bg-red-500/10 transition cursor-pointer"
             >
               <div className="w-8 h-8 rounded-full flex items-center justify-center">
                 <LogOut className="w-5 h-5" />

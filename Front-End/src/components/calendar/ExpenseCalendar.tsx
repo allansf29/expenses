@@ -6,6 +6,7 @@ import MonthlyAreaChart from "../charts/MonthlyAreaChart.tsx";
 import CalendarView from "./CalendarView.tsx";
 import { useFinanceData } from "../../hooks/useFinanceData.tsx";
 import { useExpenseForm } from "../../hooks/useExpenseForm.tsx";
+import Sidebar from "../Sidebar.tsx";
 
 
 export default function ExpenseCalendar(): React.ReactElement {
@@ -46,6 +47,7 @@ export default function ExpenseCalendar(): React.ReactElement {
 
     return (
         <div className="bg-background min-h-screen p-4 md:p-8">
+            <Sidebar />
             <div className="lg:ml-64 shadow-2xl rounded-xl bg-card border border-border p-6 md:p-8 space-y-8">
 
                 {/* CABEÇALHO E EXPORTAÇÃO */}
@@ -74,14 +76,12 @@ export default function ExpenseCalendar(): React.ReactElement {
                 </div>
 
                 {/* SUMÁRIOS */}
-                <div className="space-y-4">
-                    <h2 className="text-xl font-bold text-foreground flex items-center"><DollarSign className="w-5 h-5 mr-2 text-primary" /> Resumo do Mês</h2>
+                <div className="space-y-4">                 
                     <TotalSummary summary={monthlySummary} />
                 </div>
 
                 {/* GRÁFICO */}
                 <div className="space-y-4">
-                    <h2 className="text-xl font-bold text-foreground flex items-center"><BarChart className="w-5 h-5 mr-2 text-primary" /> Balanço Mensal</h2>
                     <MonthlyAreaChart data={chartData} />
                 </div>
 

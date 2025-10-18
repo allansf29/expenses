@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Calendar as CalendarIcon, Download, ChevronLeft, ChevronRight, BarChart, DollarSign } from "lucide-react";
+import { Calendar as CalendarIcon, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import SimpleButton from "../ui/SimpleButton.tsx";
 import TotalSummary from "../TotalSummary.tsx";
 import MonthlyAreaChart from "../charts/MonthlyAreaChart.tsx";

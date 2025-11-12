@@ -21,56 +21,32 @@ export interface FinanceData {
   setExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
 }
 
-// 💡 Dados genéricos para demonstração — PASSE STRINGS para createLocalDayDate
+// Mock com 3 meses (jan, fev, mar de 2025)
 const mockExpenses: Expense[] = [
-  {
-    id: "1",
-    date: createLocalDayDate(new Date().toISOString()), // string ISO
-    amount: 3500,
-    description: "Salário",
-    type: "income",
-    color: "bg-green-500",
-  },
-  {
-    id: "2",
-    date: createLocalDayDate(new Date().toISOString()),
-    amount: 200,
-    description: "Supermercado",
-    type: "expense",
-    color: "bg-red-500",
-  },
-  {
-    id: "3",
-    date: createLocalDayDate(new Date().toISOString()),
-    amount: 120,
-    description: "Conta de luz",
-    type: "expense",
-    color: "bg-yellow-500",
-  },
-  {
-    id: "4",
-    date: createLocalDayDate(new Date().toISOString()),
-    amount: 480,
-    description: "Venda online",
-    type: "income",
-    color: "bg-blue-500",
-  },
-  {
-    id: "5",
-    date: createLocalDayDate(new Date().toISOString()),
-    amount: 90,
-    description: "Restaurante",
-    type: "expense",
-    color: "bg-orange-500",
-  },
+  { id: "1", date: createLocalDayDate("2025-11-05"), amount: 3500, description: "Salário Janeiro", type: "income", color: "bg-green-500" },
+  { id: "2", date: createLocalDayDate("2025-11-10"), amount: 850, description: "Supermercado", type: "expense", color: "bg-red-500" },
+  { id: "3", date: createLocalDayDate("2025-11-15"), amount: 180, description: "Conta de luz", type: "expense", color: "bg-yellow-500" },
+  { id: "4", date: createLocalDayDate("2025-11-25"), amount: 600, description: "Freelancer", type: "income", color: "bg-blue-500" },
+
+  { id: "5", date: createLocalDayDate("2025-12-03"), amount: 3500, description: "Salário Fevereiro", type: "income", color: "bg-green-500" },
+  { id: "6", date: createLocalDayDate("2025-12-08"), amount: 600, description: "Supermercado", type: "expense", color: "bg-red-500" },
+  { id: "7", date: createLocalDayDate("2025-12-12"), amount: 320, description: "Internet e Luz", type: "expense", color: "bg-yellow-500" },
+  { id: "8", date: createLocalDayDate("2025-12-18"), amount: 250, description: "Venda online", type: "income", color: "bg-blue-500" },
+
+  { id: "9", date: createLocalDayDate("2025-01-02"), amount: 3600, description: "Salário Março", type: "income", color: "bg-green-500" },
+  { id: "10", date: createLocalDayDate("2025-01-06"), amount: 980, description: "Mercado", type: "expense", color: "bg-red-500" },
+  { id: "11", date: createLocalDayDate("2025-01-15"), amount: 250, description: "Transporte", type: "expense", color: "bg-orange-500" },
+  { id: "12", date: createLocalDayDate("2025-01-22"), amount: 300, description: "Freelancer site", type: "income", color: "bg-blue-500" },
 ];
 
 export function useFinanceData(): FinanceData {
-  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
+  // Inicializa currentMonth com o mês do último mock pra demo (garante que não seja vazio)
+  const latestMockMonth = startOfMonth(createLocalDayDate("2025-03-01"));
+  const [currentMonth, setCurrentMonth] = useState<Date>(latestMockMonth);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses); // inicia com mock pra não ficar vazio
 
-  // 🔹 Busca despesas da API — ou usa mock se falhar
+  // Busca despesas da API — ou usa mock se falhar
   const fetchExpensesFromServer = useCallback(async (): Promise<Expense[]> => {
     try {
       const resp = await axios.get(API_URL);
@@ -84,31 +60,42 @@ export function useFinanceData(): FinanceData {
       }));
     } catch (err) {
       console.warn("⚠️ API não encontrada, usando dados fictícios para demonstração.");
-      return mockExpenses; // 💡 fallback automático
+      return mockExpenses; // fallback
     }
   }, []);
 
+  // Carregamento inicial: tenta API, se obter dados reais atualiza expenses e currentMonth
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const data = await fetchExpensesFromServer();
-        if (mounted) setExpenses(data);
+        if (!mounted) return;
+
+        if (data && data.length > 0) {
+          setExpenses(data);
+
+          // Ajusta currentMonth automaticamente para último mês presente nos dados (evita zeros)
+          const latestDate = data
+            .map((d) => d.date)
+            .sort((a: Date, b: Date) => b.getTime() - a.getTime())[0];
+          setCurrentMonth(startOfMonth(latestDate));
+        } else {
+          // se API retornou vazio, mantemos os mocks
+          setExpenses(mockExpenses);
+          setCurrentMonth(startOfMonth(createLocalDayDate("2025-03-01")));
+        }
       } catch (err) {
         console.error("Erro ao carregar despesas:", err);
-        setExpenses(mockExpenses); // 💡 se der erro, garante mock
+        setExpenses(mockExpenses);
+        setCurrentMonth(startOfMonth(createLocalDayDate("2025-03-01")));
       }
     })();
     return () => { mounted = false; };
   }, [fetchExpensesFromServer]);
 
-  const goToPreviousMonth = useCallback(() => {
-    setCurrentMonth((prevMonth) => subMonths(prevMonth, 1));
-  }, []);
-
-  const goToNextMonth = useCallback(() => {
-    setCurrentMonth((prevMonth) => addMonths(prevMonth, 1));
-  }, []);
+  const goToPreviousMonth = useCallback(() => { setCurrentMonth((prev) => subMonths(prev, 1)); }, []);
+  const goToNextMonth = useCallback(() => { setCurrentMonth((prev) => addMonths(prev, 1)); }, []);
 
   const monthlySummary = useMemo(() => {
     const filteredExpenses = expenses.filter((e) => isSameMonth(e.date, currentMonth));

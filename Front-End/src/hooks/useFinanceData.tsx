@@ -13,51 +13,95 @@ export interface FinanceData {
   monthlySummary: { totalIncome: number; totalExpense: number; balance: number; monthName: string };
   chartData: any[];
 
-  // Setters e Funções de navegação para o componente CalendarView
   setSelectedDate: (date: Date) => void;
   goToPreviousMonth: () => void;
   goToNextMonth: () => void;
-  
-  // Funções da API (expostas para uso no hook de formulário)
+
   fetchExpensesFromServer: () => Promise<Expense[]>;
   setExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
 }
 
+// 💡 Dados genéricos para demonstração — PASSE STRINGS para createLocalDayDate
+const mockExpenses: Expense[] = [
+  {
+    id: "1",
+    date: createLocalDayDate(new Date().toISOString()), // string ISO
+    amount: 3500,
+    description: "Salário",
+    type: "income",
+    color: "bg-green-500",
+  },
+  {
+    id: "2",
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 200,
+    description: "Supermercado",
+    type: "expense",
+    color: "bg-red-500",
+  },
+  {
+    id: "3",
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 120,
+    description: "Conta de luz",
+    type: "expense",
+    color: "bg-yellow-500",
+  },
+  {
+    id: "4",
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 480,
+    description: "Venda online",
+    type: "income",
+    color: "bg-blue-500",
+  },
+  {
+    id: "5",
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 90,
+    description: "Restaurante",
+    type: "expense",
+    color: "bg-orange-500",
+  },
+];
+
 export function useFinanceData(): FinanceData {
-  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date())); 
+  const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  // 1. API Helpers
+  // 🔹 Busca despesas da API — ou usa mock se falhar
   const fetchExpensesFromServer = useCallback(async (): Promise<Expense[]> => {
-    const resp = await axios.get(API_URL);
-    return resp.data.map((e: any) => ({
-      id: e.id,
-      date: createLocalDayDate(e.date), 
-      amount: e.amount,
-      description: e.description,
-      type: e.type,
-      color: e.color,
-    }));
+    try {
+      const resp = await axios.get(API_URL);
+      return resp.data.map((e: any) => ({
+        id: e.id,
+        date: createLocalDayDate(e.date),
+        amount: e.amount,
+        description: e.description,
+        type: e.type,
+        color: e.color,
+      }));
+    } catch (err) {
+      console.warn("⚠️ API não encontrada, usando dados fictícios para demonstração.");
+      return mockExpenses; // 💡 fallback automático
+    }
   }, []);
 
-  // 2. Efeito de Carregamento Inicial
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const data = await fetchExpensesFromServer();
-        if (mounted) {
-          setExpenses(data);
-        }
+        if (mounted) setExpenses(data);
       } catch (err) {
         console.error("Erro ao carregar despesas:", err);
+        setExpenses(mockExpenses); // 💡 se der erro, garante mock
       }
     })();
     return () => { mounted = false; };
   }, [fetchExpensesFromServer]);
 
-  // 3. Funções de Navegação (Agora usam useCallback para performance)
   const goToPreviousMonth = useCallback(() => {
     setCurrentMonth((prevMonth) => subMonths(prevMonth, 1));
   }, []);
@@ -66,8 +110,6 @@ export function useFinanceData(): FinanceData {
     setCurrentMonth((prevMonth) => addMonths(prevMonth, 1));
   }, []);
 
-
-  // 4. Aggregations (usando useMemo)
   const monthlySummary = useMemo(() => {
     const filteredExpenses = expenses.filter((e) => isSameMonth(e.date, currentMonth));
     const totalIncome = filteredExpenses.filter((e) => e.type === "income").reduce((s, x) => s + x.amount, 0);

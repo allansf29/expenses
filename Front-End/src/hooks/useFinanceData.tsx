@@ -23,106 +23,45 @@ export interface FinanceData {
 
 // 💡 Dados genéricos para demonstração — PASSE STRINGS para createLocalDayDate
 const mockExpenses: Expense[] = [
-  // Janeiro
   {
     id: "1",
-    date: createLocalDayDate("2025-01-05"),
+    date: createLocalDayDate(new Date().toISOString()), // string ISO
     amount: 3500,
-    description: "Salário Janeiro",
+    description: "Salário",
     type: "income",
     color: "bg-green-500",
   },
   {
     id: "2",
-    date: createLocalDayDate("2025-01-10"),
-    amount: 250,
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 200,
     description: "Supermercado",
     type: "expense",
     color: "bg-red-500",
   },
   {
     id: "3",
-    date: createLocalDayDate("2025-01-15"),
-    amount: 180,
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 120,
     description: "Conta de luz",
     type: "expense",
     color: "bg-yellow-500",
   },
   {
     id: "4",
-    date: createLocalDayDate("2025-01-25"),
-    amount: 600,
-    description: "Freelancer",
-    type: "income",
-    color: "bg-blue-500",
-  },
-
-  // Fevereiro
-  {
-    id: "5",
-    date: createLocalDayDate("2025-02-03"),
-    amount: 3500,
-    description: "Salário Fevereiro",
-    type: "income",
-    color: "bg-green-500",
-  },
-  {
-    id: "6",
-    date: createLocalDayDate("2025-02-08"),
-    amount: 400,
-    description: "Supermercado",
-    type: "expense",
-    color: "bg-red-500",
-  },
-  {
-    id: "7",
-    date: createLocalDayDate("2025-02-12"),
-    amount: 220,
-    description: "Internet e Luz",
-    type: "expense",
-    color: "bg-yellow-500",
-  },
-  {
-    id: "8",
-    date: createLocalDayDate("2025-02-18"),
-    amount: 350,
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 480,
     description: "Venda online",
     type: "income",
     color: "bg-blue-500",
   },
-
-  // Março
   {
-    id: "9",
-    date: createLocalDayDate("2025-03-02"),
-    amount: 3600,
-    description: "Salário Março",
-    type: "income",
-    color: "bg-green-500",
-  },
-  {
-    id: "10",
-    date: createLocalDayDate("2025-03-06"),
-    amount: 280,
-    description: "Mercado",
-    type: "expense",
-    color: "bg-red-500",
-  },
-  {
-    id: "11",
-    date: createLocalDayDate("2025-03-15"),
-    amount: 150,
-    description: "Transporte",
+    id: "5",
+    date: createLocalDayDate(new Date().toISOString()),
+    amount: 90,
+    description: "Restaurante",
     type: "expense",
     color: "bg-orange-500",
-  },
-  {
-    id: "12",
-    date: createLocalDayDate("2025-03-22"),
-    amount: 500,
-    description: "Freelancer site",
-    type: "income",
-    color: "bg-blue-500",
   },
 ];
 

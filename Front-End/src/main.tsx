@@ -7,7 +7,7 @@ import "./index.css";
 
 import Dashboard from "./pages/Dashboard";
 import Calendar from "./components/calendar/ExpenseCalendar";
-import ScrollToTop from "./components/ScrollToTop.tsx
+import ScrollToTop from "./components/ScrollToTop.tsx";
 import Analise from "./pages/Analysis";
 import Metas from "./pages/Metas";
 import InsightsPage from "./pages/Insights";
